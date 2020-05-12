@@ -85,16 +85,52 @@ The output have arrows connecting any found dependencies, where the arrow head i
 Dependencies and References
 ---------------------------
 
-As seen above, Cloudgaze can identify and connect resources which have dependencies to another resource. This is currently limited to resources in the same stack, and in reality. The following CloudFormation keywords are supported:
+As seen above, Cloudgaze can identify and connect resources which have dependencies to another resource. This is currently limited to resources in the same stack, and in reality. The following CloudFormation function keywords are supported (at least partially):
 
-.. list-table::
+- !Sub
+- !Ref
+- !ImportValue
+- !GetAtt
+- Fn::Sub
+- Ref
+- Fn::ImportValue
+- Fn::GetAtt
 
-   *  - !Sub and Fn::Sub
-      - Either by using it stand alone or as part of a longer string
-   *  - !GetAtt and Fn::GetAtt
-      - The dependency will be to the resource, not the "output". For instance, *!GetAtt Resource.Arn* will create a dependency to the resource *Resource*
-   *  - !Ref and Ref
-      -
+The following syntax alternatives are supported:
+
+.. code-block:: yaml
+
+   Resources:
+  HelloWorld:
+    Type: AWS::Serverless::Function
+    Properties:
+      SameLineGetAtt: !GetAtt ResourceName.Arn
+      NextLineGetAtt:
+        !GetAtt ResourceName.Arn
+      FullMethodGetAtt:
+        Fn::GetAtt: ResourceName.Arn
+      FullMethodArrayGetAtt:
+        Fn::GetAtt: [ResourceName, GetAtt4]
+      ImportValueSameLine: !ImportValue ImportName
+      ImportValueWithSub:
+        Fn::ImportValue: !Sub 'made-up-with-${SubString}-import'
+      ImportValueWithoutSub:
+        Fn::ImportValue: ImportName
+      SubSameLine: !Sub 'resource-with-${SubString}'
+      SubAnotherLine:
+        Fn::Sub: ${SubString}
+      ShortRef: !Ref SimpleReference
+      LongRef:
+        Ref: SimpleReference
+
+
+Roadmap
+=======
+While no detailed roadmap can be given, the following are features that will be implemented and are under development:
+
+- Provide a calculated output instead of fixed locations, reducing the amount of editing you need to do yourself
+- Providing relational information on dependencies, to show if it's an import, or a simple reference/attribute reference
+- More service specific icons, instead of using the "General" AWS resource icon for some resource types
 
 Privacy
 =======
